@@ -1,3 +1,3 @@
 server.host: 0.0.0.0
-elasticsearch.hosts: http://es0:9200
+elasticsearch.hosts: http://es1:9200
 elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS10b2tlbjoyNXNDT0R3RVJ6Q1g2cUdnMHZkUkx3"

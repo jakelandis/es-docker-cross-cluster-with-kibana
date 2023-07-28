@@ -1,29 +1,55 @@
 version: '3'
 services:
-  es0:
-    image: elasticsearch:8.8.0
+  es-query:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0-SNAPSHOT
     environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+     - "ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.untrusted_remote_cluster_feature_flag_registered=true"
     ports:
       - 9200:9200
     volumes:
-      - ./es0.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elasticsearch.keystore:/usr/share/elasticsearch/config/elasticsearch.keystore
+      - ./es-query.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch.keystore.query:/usr/share/elasticsearch/config/elasticsearch.keystore
       - ./log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
       - ./service_tokens:/usr/share/elasticsearch/config/service_tokens 
     networks:
       - esnet
-  kibana:
-    image: kibana:8.8.0 
-    container_name: kibana_8x
+  # k-query:
+  #   image: kibana:8.8.0 
+  #   ports:
+  #     - "5601:5601"
+  #   volumes:
+  #     - ./k-query.yml:/usr/share/kibana/config/kibana.yml 
+  #   depends_on:
+  #     - es-query
+  #   networks:
+  #     - esnet    
+
+  # second cluster
+  es-fulfill:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0-SNAPSHOT
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.untrusted_remote_cluster_feature_flag_registered=true"
     ports:
-      - "5601:5601"
+      - 19200:9200
     volumes:
-      - ./kibana.yml:/usr/share/kibana/config/kibana.yml 
+      - ./es-fulfill.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch.keystore.fulfill:/usr/share/elasticsearch/config/elasticsearch.keystore
+      - ./log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - ./service_tokens:/usr/share/elasticsearch/config/service_tokens
     depends_on:
-      - es0
+      - es-query   
     networks:
-      - esnet     
+      - esnet
+  # k-fulfill:
+  #   image: kibana:8.8.0 
+  #   ports:
+  #     - "15601:5601"
+  #   volumes:
+  #     - ./k-fulfill.yml:/usr/share/kibana/config/kibana.yml 
+  #   depends_on:
+  #     - es-fulfill
+  #   networks:
+  #     - esnet       
      
 networks:
   esnet:
