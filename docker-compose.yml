@@ -1,7 +1,7 @@
 version: '3'
 services:
   es-query:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0-SNAPSHOT
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0-SNAPSHOT
     environment:
      - "ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.untrusted_remote_cluster_feature_flag_registered=true"
     ports:
@@ -13,20 +13,20 @@ services:
       - ./service_tokens:/usr/share/elasticsearch/config/service_tokens 
     networks:
       - esnet
-  # k-query:
-  #   image: kibana:8.8.0 
-  #   ports:
-  #     - "5601:5601"
-  #   volumes:
-  #     - ./k-query.yml:/usr/share/kibana/config/kibana.yml 
-  #   depends_on:
-  #     - es-query
-  #   networks:
-  #     - esnet    
+  k-query:
+    image: docker.elastic.co/kibana/kibana:8.10.0-SNAPSHOT 
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./k-query.yml:/usr/share/kibana/config/kibana.yml 
+    depends_on:
+      - es-query
+    networks:
+      - esnet    
 
   # second cluster
   es-fulfill:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0-SNAPSHOT
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0-SNAPSHOT
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.untrusted_remote_cluster_feature_flag_registered=true"
     ports:
@@ -40,16 +40,16 @@ services:
       - es-query   
     networks:
       - esnet
-  # k-fulfill:
-  #   image: kibana:8.8.0 
-  #   ports:
-  #     - "15601:5601"
-  #   volumes:
-  #     - ./k-fulfill.yml:/usr/share/kibana/config/kibana.yml 
-  #   depends_on:
-  #     - es-fulfill
-  #   networks:
-  #     - esnet       
+  k-fulfill:
+    image: docker.elastic.co/kibana/kibana:8.10.0-SNAPSHOT 
+    ports:
+      - "15601:5601"
+    volumes:
+      - ./k-fulfill.yml:/usr/share/kibana/config/kibana.yml 
+    depends_on:
+      - es-fulfill
+    networks:
+      - esnet       
      
 networks:
   esnet:
