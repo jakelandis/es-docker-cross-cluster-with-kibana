@@ -1,13 +1,14 @@
 version: '3'
 services:
   es-query:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0-SNAPSHOT
+    image: elasticsearch:8.14.0-SNAPSHOT-localbuild
     environment:
      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - 9200:9200
     volumes:
       - ./query-config:/usr/share/elasticsearch/config
+      - ./querydata:/usr/share/elasticsearch/data
     networks:
       - esnet
   k-query:
@@ -23,7 +24,7 @@ services:
 
  # second cluster
   es-fulfill:
-    image: elasticsearch:8.12.0
+    image: elasticsearch:8.14.0-SNAPSHOT-localbuild
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
@@ -31,12 +32,13 @@ services:
       - 19443:9443
     volumes:
       - ./fulfill-config:/usr/share/elasticsearch/config
+      - ./fulfilldata:/usr/share/elasticsearch/data
     depends_on:
       - es-query   
     networks:
       - esnet
   k-fulfill:
-    image: kibana:8.12.0
+    image: docker.elastic.co/kibana/kibana:8.14.0-SNAPSHOT
     ports:
       - "15601:5601"
     volumes:
