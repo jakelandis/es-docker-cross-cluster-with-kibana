@@ -13,6 +13,7 @@ using a prebuilt SNAPSHOT
 * (optional) docker image rm docker.elastic.co/elasticsearch/elasticsearch:8.x.y-SNAPSHOT 
 
 ```bash
+rm -rf fulfilldata && rm -rf querydata # to ensure clean slate 
 docker-compose up
 curl -u elastic:changeme http://localhost:9200  # query cluster
 curl -u elastic:changeme http://localhost:19200 # fulfill cluster
@@ -125,6 +126,12 @@ and
 
 should return success (assuming logs-foo exists in the fulfilling cluster)
 
+Optinally if you want to upgrade a cluster:
+
+update the verions in docker-compose and restart the node. for example:
+
+docker-compose up -d --no-deps k-fulfill
+docker-compose up -d --no-deps es-fulfill
 
 ### With a custom user
 
