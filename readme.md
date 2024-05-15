@@ -54,8 +54,8 @@ Example output:
 }
 ```
 
-Add a document to the fulfilling cluste.
-````json
+Add a document to the fulfilling cluster.
+```json
 POST logs-test/_doc/1
 {
   "foo" :true
@@ -64,22 +64,35 @@ POST logs-test/_doc/1
 
 Stop the query cluster:
 
-Note: With 8.13+ you don't need to restart the cluster, rather only need to call the reload API : https://github.com/elastic/elasticsearch/pull/102798 
-
 ```bash
 docker-compose stop es-query
 ```
 
-Navigate to the rool of a recent released version of 8.x to update the docker keystore:
+Download the version of the keystore that matches the query cluster version to ensure a compatilbe keystort tool. For example, if the query cluster version is 8.13.4, then use that version to update the keystore. If you built locally, then use `./gradlew localDistro` get a release like build.
 
+```
+cd ~/workspace/elasticsearch/releases/
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.4-darwin-x86_64.tar.gz 
+tar xfx elasticsearch-8.13.4-darwin-x86_64.tar.gz 
+cd elasticsearch-8.13.4 
+```
+or a local build
+
+```
+cd ~/workspace/elasticsearch/8.14
+./gradlew localDistro
+cd ~/workspace/elasticsearch/8.14/build/distribution/local/elasticsearch-8.14.0-SNAPSHOT
+```
+
+Copy the keystore used by docker so we can update it.
 ```bash
-cp  ~/workspace/es-docker-cross-cluster-with-kibana/elasticsearch.keystore.query ./config/elasticsearch.keystore 
+cp  ~/workspace/es-docker-cross-cluster-with-kibana/query-config/elasticsearch.keystore ./config/elasticsearch.keystore 
 bin/elasticsearch-keystore add cluster.remote.my_remote_cluster.credentials 
 # add the encoded string, i.e. NTNqdW5Za0IxNTNwUlRHbXlNREY6M3FRcm1UTWNTdFNINlJwb2tEbUUxUQ==
 # confirm
 bin/elasticsearch-keystore show cluster.remote.my_remote_cluster.credentials
 # replace
-cp ./config/elasticsearch.keystore ~/workspace/es-docker-cross-cluster-with-kibana/elasticsearch.keystore.query
+cp ./config/elasticsearch.keystore ~/workspace/es-docker-cross-cluster-with-kibana/query-config/elasticsearch.keystore
 ```
 
 Start the query cluster back up
@@ -106,8 +119,9 @@ GET _remote/info
     }
 }
 ```
-and 
-GET my_remote_cluster:logs-test/_search
+and
+
+`GET my_remote_cluster:logs-test/_search`
 
 should return success (assuming logs-foo exists in the fulfilling cluster)
 
