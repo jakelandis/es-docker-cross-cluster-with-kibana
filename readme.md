@@ -1,5 +1,17 @@
 ### Usage
 
+build custom image
+```bash
+./gradlew buildAarch64DockerImage
+```
+
+using a prebuilt SNAPSHOT
+* log in to https://docker-auth.elastic.co/github_auth and copy paste to command line after logging in
+* docker.elastic.co/kibana/kibana:8.x.y-SNAPSHOT
+* docker.elastic.co/elasticsearch/elasticsearch:8.x.y-SNAPSHOT
+* (optional)  docker tag elasticsearch:8.x.y-SNAPSHOT elasticsearch:8.x.y-SNAPSHOT-localbuild (to disambigute which snapshot)
+* (optional) docker image rm docker.elastic.co/elasticsearch/elasticsearch:8.x.y-SNAPSHOT 
+
 ```bash
 docker-compose up
 curl -u elastic:changeme http://localhost:9200  # query cluster

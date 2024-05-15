@@ -1,30 +1,27 @@
 version: '3'
 services:
   es-query:
-    image: elasticsearch:8.12.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0-SNAPSHOT
     environment:
      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - 9200:9200
     volumes:
-      - ./es-query.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elasticsearch.keystore.query:/usr/share/elasticsearch/config/elasticsearch.keystore
-      - ./log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - ./service_tokens:/usr/share/elasticsearch/config/service_tokens 
+      - ./query-config:/usr/share/elasticsearch/config
     networks:
       - esnet
   k-query:
-    image: kibana:8.12.0
+    image: docker.elastic.co/kibana/kibana:8.14.0-SNAPSHOT #make sure you login: https://docker-auth.elastic.co/github_auth
     ports:
       - "5601:5601"
     volumes:
-      - ./k-query.yml:/usr/share/kibana/config/kibana.yml 
+      - ./query-config/kibana.yml:/usr/share/kibana/config/kibana.yml 
     depends_on:
       - es-query
     networks:
       - esnet    
 
-  # second cluster
+ # second cluster
   es-fulfill:
     image: elasticsearch:8.12.0
     environment:
@@ -33,10 +30,7 @@ services:
       - 19200:9200
       - 19443:9443
     volumes:
-      - ./es-fulfill.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elasticsearch.keystore.fulfill:/usr/share/elasticsearch/config/elasticsearch.keystore
-      - ./log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - ./service_tokens:/usr/share/elasticsearch/config/service_tokens
+      - ./fulfill-config:/usr/share/elasticsearch/config
     depends_on:
       - es-query   
     networks:
@@ -46,7 +40,7 @@ services:
     ports:
       - "15601:5601"
     volumes:
-      - ./k-fulfill.yml:/usr/share/kibana/config/kibana.yml 
+      - ./fulfill-config/kibana.yml:/usr/share/kibana/config/kibana.yml 
     depends_on:
       - es-fulfill
     networks:
