@@ -130,8 +130,18 @@ Optinally if you want to upgrade a cluster:
 
 update the verions in docker-compose and restart the node. for example:
 
+```
+  es-fulfill:
+    image: elasticsearch:8.15.0-SNAPSHOT-localbuild
+    ...
+  k-fulfill:
+    image: docker.elastic.co/kibana/kibana:8.15.0-SNAPSHOT
+```
+
+```
 docker-compose up -d --no-deps k-fulfill
 docker-compose up -d --no-deps es-fulfill
+```
 
 ### With a custom user
 
@@ -163,6 +173,8 @@ GET my_remote_cluster:logs-test/_search
 
 ```
 
+### Ignore keystore changes
 
+Due to compatibilty issues we use elder keystores here. Those keystores may be updated when running newer versions. We don't want to commit those. Run `ignore-keystore-updates.sh` to instruct git to ignore changes to those files before committing. 
 
 
